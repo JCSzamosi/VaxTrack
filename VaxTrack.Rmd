@@ -1,0 +1,254 @@
+Vax Track
+=========
+
+## Setup
+
+<details><summary>Click here to see the setup code</summary>
+
+Load packages and import data:
+
+```{r Setup, message=FALSE}
+knitr::opts_chunk$set(message = FALSE)
+setwd('~/MyProjects/COVID19/VaxTrack/')
+library(tidyverse)
+theme_set(theme_bw())
+library(lubridate)
+dat_can = read.csv('covid19track_all.csv', na.strings = 'null')
+# head(dat_can)
+# summary(dat_can)
+dat_can$data__date = ymd(dat_can$data__date)
+# summary(dat_can)
+
+dat_vax = (dat_can
+		   %>% filter(!is.na(data__total_vaccines_distributed))
+		   %>% select(data__date,data__change_vaccinations,
+		   		   data__change_vaccines_distributed,data__total_vaccinations,
+		   		   data__total_vaccines_distributed))
+# dim(dat_vax)
+# head(dat_vax)
+```
+
+Function definitions:
+
+```{r Functions}
+# This is the least graceful way I could have done this, but it works.
+avg_wait = function(dat_vax){
+	pos = 1
+	dist = 0
+	vaxxed = 0
+	i = 0
+	counted = 0
+	avg_df = data.frame(Time = NA, Doses = NA, .vaxxed = NA,
+						.counted = NA, .leftover = NA,
+						.dist = NA, .pos = NA)
+	for (i in 1:nrow(dat_vax)){
+		leftover = dist - vaxxed
+		dist = dat_vax[pos,'data__total_vaccines_distributed']
+		vaxxed = dat_vax[i,'data__total_vaccinations']
+		new_vaxxed = dat_vax[i,'data__change_vaccinations']
+		if (vaxxed <= dist){
+			timediff = dat_vax[i, 'data__date'] - dat_vax[pos, 'data__date']
+			avg_df = rbind(avg_df, data.frame(Time = timediff, 
+											  Doses = new_vaxxed,
+											  .vaxxed = vaxxed, 
+											  .counted = counted,
+											  .leftover = leftover,
+											  .dist = dist, .pos = pos))
+			counted = counted + new_vaxxed
+		} else {
+			timediff = dat_vax[i, 'data__date'] - dat_vax[pos, 'data__date']
+			avg_df = rbind(avg_df, data.frame(Time = timediff, Doses = leftover,
+											  .vaxxed = vaxxed, 
+											  .counted = counted,
+											  .leftover = leftover,
+											  .dist = dist, .pos = pos))
+			counted = counted + leftover
+			new_vaxxed = new_vaxxed - leftover
+			pos = pos + 1
+			dist = dat_vax[pos, 'data__total_vaccines_distributed']
+			while (dist < vaxxed){
+				avail = dist - counted
+				timediff = dat_vax[i, 'data__date'] - dat_vax[pos, 'data__date']
+				avg_df = rbind(avg_df, data.frame(Time = timediff,
+												  Doses = avail,
+											  .vaxxed = vaxxed, 
+											  .counted = counted,
+											  .leftover = leftover,
+											  .dist = dist, .pos = pos))
+				counted = counted + avail
+				new_vaxxed = new_vaxxed - avail
+				pos = pos + 1
+				dist = dat_vax[pos, 'data__total_vaccines_distributed']
+				if (pos > i){
+					stop('pos > i')
+				}
+			}
+			timediff = dat_vax[i, 'data__date'] - dat_vax[pos, 'data__date']
+			avg_df = rbind(avg_df, data.frame(Time = timediff, Doses = new_vaxxed,
+											  .vaxxed = vaxxed, 
+											  .counted = counted,
+											  .leftover = leftover,
+											  .dist = dist, .pos = pos))
+			counted = counted + new_vaxxed
+		}
+	}
+	avg_df = na.omit(avg_df)
+	return(avg_df)
+}
+
+roll_avg = function(x, n){
+	if (length(x) <= n){
+		stop('vector needs to be longer than window')
+	}
+	v_avg = rep(NA, n-1)
+	for (i in n:length(x)){
+		avg = mean(x[(i-n+1):i], na.rm = TRUE)
+		v_avg = c(v_avg, avg)
+	}
+	return(v_avg)
+}
+
+get_wait = function(df){
+	wait = sum(df$Time*df$Doses)/sum(df$Doses)
+}
+```
+
+</details>
+
+## Vaccine Gap
+
+<details><summary>code</summary>
+```{r}
+dist_tot = dat_vax[nrow(dat_vax),'data__total_vaccines_distributed']
+admn_tot = dat_vax[nrow(dat_vax),'data__total_vaccinations']
+msg = paste('So far Canada has distributed ', 
+			format(dist_tot, nsmall = 1, big.mark = ','), 
+			' vaccine doses, and ',
+			format(admn_tot, nsmall = 1, big.mark = ','), 
+			' of those have been administered.', sep = '')
+msg1 = paste('This is a cumulative administration rate of ', 
+			100*round(admn_tot/dist_tot, 4), '%', sep = '')
+```
+</details>
+
+```{r, echo = FALSE}
+msg
+msg1
+```
+
+<details><summary>code</summary>
+```{r}
+# head(dat_vax)
+dat_tot_long = (dat_vax
+				%>% select(-data__change_vaccinations, 
+						   -data__change_vaccines_distributed)
+				%>% gather(Variable, Count, -data__date))
+# head(dat_tot_long)
+abs_adm = ggplot(dat_tot_long, aes(data__date, Count, fill = Variable)) +
+	geom_area(alpha = 0.5) +
+	scale_fill_manual(values = c('sienna4', 'sienna1'), 
+					  labels = c('doses distributed','doses administered'),
+					  name = NULL) +
+	xlab('Date') +
+	ggtitle('Total cumulative doses distributed\nand administered over time')
+dat_vax = (dat_vax
+		   %>% mutate(prop_dist = 
+		   		   	data__total_vaccinations/data__total_vaccines_distributed,
+		   		   prop_7 = roll_avg(prop_dist, 7)))
+prop_adm = ggplot(dat_vax, aes(data__date, prop_dist)) +
+	geom_line() +
+	xlab('Date') +
+	ylab('Proportion Administered') +
+	ggtitle('Instantaneous proportion of delivered doses\nthat have been administered')
+
+prop_adm_7 = ggplot(dat_vax, aes(data__date, prop_7)) +
+	geom_line() +
+	xlab('Date') +
+	ylab('Proportion Administered') +
+	ggtitle('Rolling 7-day average of proportion of delivered doses\nthat have been administered')
+```
+</details>
+
+```{r, echo = FALSE, warning=FALSE, fig.width=8.65}
+abs_adm
+```
+```{r, echo = FALSE, warning=FALSE}
+prop_adm
+prop_adm_7
+```
+
+
+## Wait Times
+
+<details><summary>code</summary>
+```{r}
+wt_df = avg_wait(dat_vax)
+wait = get_wait(wt_df)
+msg = paste('Vaccine doses have waited an average of', round(wait,1), 'days between being distributed and being administered.')
+```
+</details>
+
+```{r, echo = FALSE}
+msg
+```
+
+<details><summary>code</summary>
+```{r}
+wait_df = data.frame(Wait = NA)
+
+for(i in 2:nrow(dat_vax)){
+	wait_df = rbind(wait_df, 
+					data.frame(Wait = get_wait(avg_wait(dat_vax[1:i,]))))
+}
+wait_df = na.omit(wait_df)
+# head(wait_df)
+wait_df$Date = dat_vax[-1,'data__date']
+
+wait_plt = ggplot(wait_df, aes(Date, Wait)) +
+	geom_line() +
+	ylab('Wait Time (Days)') +
+	ggtitle('Cumulative average time it takes a vaccine dose\nto go from distribution to administration\nin Canada')
+```
+</details>
+
+```{r, echo = FALSE}
+wait_plt
+```
+
+<details><summary>code</summary>
+```{r}
+n = nrow(wt_df)
+dist = wt_df[n,'.dist']
+vaxxed = wt_df[n,'.vaxxed']
+leftover = dist - vaxxed
+pos = wt_df[n,'.pos']
+timediff = today() - dat_vax[pos, 'data__date']
+
+avg_wt = data.frame(Time = timediff, Doses = leftover)
+# avg_wt
+
+for (i in (pos+1):nrow(dat_vax)){
+	i = i + 1
+	i
+	dat_vax[i,]
+	timediff = today() - dat_vax[i, 'data__date']
+	timediff
+	avg_wt = rbind(avg_wt,
+				   data.frame(Time = timediff,
+				   		   Doses = dat_vax[i, 'data__change_vaccines_distributed']))
+	avg_wt
+}
+
+avg_wt = na.omit(avg_wt)
+
+new_wt = sum(avg_wt$Time * avg_wt$Doses)/sum(avg_wt$Doses)
+
+msg = paste('Current unadministerd doses have been waiting an average of',
+			round(new_wt,1), 'days.')
+```
+</details>
+
+```{r, echo = FALSE}
+msg
+```
+
