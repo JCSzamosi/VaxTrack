@@ -142,15 +142,19 @@ msg1
 dat_tot_long = (dat_vax
 				%>% select(-data__change_vaccinations, 
 						   -data__change_vaccines_distributed)
-				%>% gather(Variable, Count, -data__date))
+				%>% gather(Variable, Count, -data__date)
+				%>% mutate(Variable = factor(Variable, 
+											 levels = c('data__total_vaccines_distributed',
+											 		   'data__total_vaccinations'))))
 # head(dat_tot_long)
 abs_adm = ggplot(dat_tot_long, aes(data__date, Count, fill = Variable)) +
-	geom_area(alpha = 0.5) +
+	geom_area(alpha = 0.5, position = 'identity') +
 	scale_fill_manual(values = c('sienna4', 'sienna1'), 
 					  labels = c('doses distributed','doses administered'),
 					  name = NULL) +
 	xlab('Date') +
 	ggtitle('Total cumulative doses distributed\nand administered over time')
+abs_adm
 dat_vax = (dat_vax
 		   %>% mutate(prop_dist = 
 		   		   	data__total_vaccinations/data__total_vaccines_distributed,
