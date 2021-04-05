@@ -212,9 +212,9 @@ summary(dat_can)</code></pre>
 <pre><code>##      date            change_cases    change_fatalities  change_tests   
 ##  Length:436         Min.   :   1.0   Min.   :  0.00    Min.   : -5768  
 ##  Class :character   1st Qu.: 457.5   1st Qu.:  8.00    1st Qu.: 28604  
-##  Mode  :character   Median :1533.5   Median : 33.50    Median : 58840  
-##                     Mean   :2438.5   Mean   : 55.66    Mean   : 65169  
-##                     3rd Qu.:3880.0   3rd Qu.: 95.50    3rd Qu.: 99676  
+##  Mode  :character   Median :1542.5   Median : 33.50    Median : 58840  
+##                     Mean   :2447.1   Mean   : 55.69    Mean   : 65169  
+##                     3rd Qu.:3945.2   3rd Qu.: 95.50    3rd Qu.: 99676  
 ##                     Max.   :9481.0   Max.   :228.00    Max.   :393941  
 ##                     NA's   :22       NA's   :22                        
 ##  change_hospitalizations change_criticals  change_recoveries
@@ -237,9 +237,9 @@ summary(dat_can)</code></pre>
 ##  Min.   :      1   Min.   :    0    Min.   :       2   Min.   :   0.0        
 ##  1st Qu.:  73137   1st Qu.: 5376    1st Qu.: 1298806   1st Qu.: 328.8        
 ##  Median : 129968   Median : 9152    Median : 6350736   Median :1373.5        
-##  Mean   : 288954   Mean   : 9859    Mean   : 9402507   Mean   :1604.9        
+##  Mean   : 288963   Mean   : 9859    Mean   : 9402507   Mean   :1604.9        
 ##  3rd Qu.: 487503   3rd Qu.:13868    3rd Qu.:16781053   3rd Qu.:2532.5        
-##  Max.   :1009537   Max.   :23043    Max.   :28413869   Max.   :4879.0        
+##  Max.   :1013091   Max.   :23055    Max.   :28413869   Max.   :4879.0        
 ##                                                                              
 ##  total_criticals  total_recoveries total_vaccinations total_vaccinated
 ##  Min.   :  0.00   Min.   :     0   Min.   :      0    Min.   :  2173  
@@ -454,10 +454,10 @@ avg_wt = na.omit(avg_wt)
 
 new_wt = sum(avg_wt$Time * avg_wt$Doses)/sum(avg_wt$Doses)
 
-msg = paste('Current unadministerd doses have been waiting an average of',
+msg = paste('Current unadministered doses have been waiting an average of',
             round(new_wt,1), 'days.')</code></pre>
 <p></details></p>
-<pre><code>## [1] &quot;Current unadministerd doses have been waiting an average of 2.6 days.&quot;</code></pre>
+<pre><code>## [1] &quot;Current unadministered doses have been waiting an average of 2.6 days.&quot;</code></pre>
 <hr />
 <p><details><summary>code</summary></p>
 <pre class="r"><code>msg = paste('This website was last updated', today())
