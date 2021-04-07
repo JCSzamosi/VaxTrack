@@ -157,7 +157,7 @@ dat_tot_long = (dat_vax
 											 		   'total_vaccinations'))))
 # head(dat_tot_long)
 abs_adm = ggplot(dat_tot_long, aes(date, Count, fill = Variable)) +
-	geom_area(alpha = 0.5, position = 'identity') +
+	geom_area(position = 'identity') +
 	scale_fill_manual(values = c('sienna4', 'sienna1'), 
 					  labels = c('doses distributed','doses administered'),
 					  name = NULL) +
@@ -256,7 +256,7 @@ avg_wt = na.omit(avg_wt)
 
 new_wt = sum(avg_wt$Time * avg_wt$Doses)/sum(avg_wt$Doses)
 
-msg = paste('Current unadministerd doses have been waiting an average of',
+msg = paste('Current unadministered doses have been waiting an average of',
 			round(new_wt,1), 'days.')
 ```
 </details>
@@ -279,3 +279,5 @@ msg
 msg1
 ```
 
+This website is normally automatically updated at 11pm EDT daily. Exceptions 
+may occur.
