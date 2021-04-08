@@ -50,7 +50,7 @@ dat_vax = (dat_can
 ```{r}
 dist_tot = dat_vax[nrow(dat_vax),'total_vaccines_distributed']
 admn_tot = dat_vax[nrow(dat_vax),'total_vaccinations']
-msg = paste('So far New Brunswick has received '
+msg = paste('So far New Brunswick has received ',
 			format(dist_tot, nsmall = 1, big.mark = ','), 
 			' vaccine doses, and ',
 			format(admn_tot, nsmall = 1, big.mark = ','), 
