@@ -8,19 +8,19 @@ doses, or vaccine types.
 
 <details><summary>Click here for links to provincial/territorial sites</summary>
 
-* [Alberta](./AB/index.html)
-* [British Columbia](./BC/index.html)
-* [Manitoba](./MB/index.html)
-* [New Brunswick](./NB/index.html)
-* [Newfoundland](./NL/index.html)
-* [Nova Scotia](./NS/index.html)
-* [Northwest Territories](./NT/index.html)
-* [Nunavut](./NU/index.html)
-* [Ontario](./ON/index.html)
-* [Prince Edward Island](./PE/index.html)
-* [Quebec](./QC/index.html)
-* [Saskatchewan](./SK/index.html)
-* [Yukon](./YT/index.html)
+* [Alberta](./AB.html)
+* [British Columbia](./BC.html)
+* [Manitoba](./MB.html)
+* [New Brunswick](./NB.html)
+* [Newfoundland](./NL.html)
+* [Nova Scotia](./NS.html)
+* [Northwest Territories](./NT.html)
+* [Nunavut](./NU.html)
+* [Ontario](./ON.html)
+* [Prince Edward Island](./PE.html)
+* [Quebec](./QC.html)
+* [Saskatchewan](./SK.html)
+* [Yukon](./YT.html)
 
 </details>
 
