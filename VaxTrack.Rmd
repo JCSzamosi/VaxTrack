@@ -6,6 +6,22 @@ data are taken from [covid19tracker.ca](https://covid19tracker.ca). This
 analysis is at the dose level and does not distinguish between first and second
 doses, or vaccine types.
 
+<details><summary>Click here for links to provincial/territorial sites</summary>
+
+* [Alberta](./AB/index.html)
+* [British Colombia](./BC/index.html)
+* [Manitoba](./MB/index.html)
+* [New Brunswick](./NB/index.html)
+* [Newfoundland](./NL/index.html)
+* [Nova Scotia](./NS/index.html)
+* [Northwest Territories](./NT/index.html)
+* [Nunavut](./NU/index.html)
+* [Ontario](./ON/index.html)
+* [Prince Edward Island](./PE/index.html)
+* [Quebec](./QC/index.html)
+* [Saskatchewan](./SK/index.html)
+* [Yukon](./YT/index.html)
+
 ## Setup
 
 <details><summary>Click here to see the setup code</summary>

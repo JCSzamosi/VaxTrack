@@ -1,10 +1,13 @@
-Vax Track Canada
+Vax Track Yukon
 ================
 
-Tracking how quickly Canada is moving its vaccine supply into human beings. All
+Tracking how quickly Yukon is moving its vaccine supply into human beings. All
 data are taken from [covid19tracker.ca](https://covid19tracker.ca). This 
 analysis is at the dose level and does not distinguish between first and second
 doses, or vaccine types.
+
+Some provinces have dates where they appear to have administered more doses
+than were distributed to them. These doses are not included in wait-time counts.
 
 ## Setup
 
@@ -47,7 +50,7 @@ dat_vax = (dat_can
 ```{r}
 dist_tot = dat_vax[nrow(dat_vax),'total_vaccines_distributed']
 admn_tot = dat_vax[nrow(dat_vax),'total_vaccinations']
-msg = paste('So far Canada has distributed ', 
+msg = paste('So far Yukon has received ', 
 			format(dist_tot, nsmall = 1, big.mark = ','), 
 			' vaccine doses, and ',
 			format(admn_tot, nsmall = 1, big.mark = ','), 
@@ -138,7 +141,7 @@ wait_df$Date = dat_vax[-1,'date']
 wait_plt = ggplot(wait_df, aes(Date, Wait)) +
 	geom_line() +
 	ylab('Wait Time (Days)') +
-	ggtitle('Cumulative average time it takes a vaccine dose\nto go from distribution to administration\nin Canada')
+	ggtitle('Cumulative average time it takes a vaccine dose\nto go from distribution to administration\nin Yukon')
 ```
 </details>
 
