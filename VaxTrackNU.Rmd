@@ -19,7 +19,7 @@ library(jsonlite)
 library(tidyverse)
 theme_set(theme_bw())
 library(lubridate)
-url = 'https://api.covid19tracker.ca/reports?fill_dates=true'
+url = 'https://api.covid19tracker.ca/reports/province/nu?fill_dates=true'
 upd = fromJSON(url)
 dat_can = upd$data
 # head(dat_can)

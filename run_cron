@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cd /home/jcszamosi/MyProjects/COVID19/VaxTrack
+Rscript -e "rmarkdown::render('VaxTrack.Rmd','html_document',output_file='VaxTrack.html')"
+Rscript -e "rmarkdown::render('VaxTrackAB.Rmd','html_document',output_file='VaxTrackAB.html')"
+Rscript -e "rmarkdown::render('VaxTrackBC.Rmd','html_document',output_file='VaxTrackBC.html')"
+Rscript -e "rmarkdown::render('VaxTrackMB.Rmd','html_document',output_file='VaxTrackMB.html')"
+Rscript -e "rmarkdown::render('VaxTrackNB.Rmd','html_document',output_file='VaxTrackNB.html')"
+Rscript -e "rmarkdown::render('VaxTrackNL.Rmd','html_document',output_file='VaxTrackNL.html')"
+Rscript -e "rmarkdown::render('VaxTrackNS.Rmd','html_document',output_file='VaxTrackNS.html')"
+Rscript -e "rmarkdown::render('VaxTrackNT.Rmd','html_document',output_file='VaxTrackNT.html')"
+Rscript -e "rmarkdown::render('VaxTrackNU.Rmd','html_document',output_file='VaxTrackNU.html')"
+Rscript -e "rmarkdown::render('VaxTrackON.Rmd','html_document',output_file='VaxTrackON.html')"
+Rscript -e "rmarkdown::render('VaxTrackPE.Rmd','html_document',output_file='VaxTrackPE.html')"
+Rscript -e "rmarkdown::render('VaxTrackQC.Rmd','html_document',output_file='VaxTrackQC.html')"
+Rscript -e "rmarkdown::render('VaxTrackSK.Rmd','html_document',output_file='VaxTrackSK.html')"
+Rscript -e "rmarkdown::render('VaxTrackYT.Rmd','html_document',output_file='VaxTrackYT.html')"
+git add VaxTrack*.html
+git ct -m "cron autoupdate $(date +%Y-%m-%d)"
+git po
