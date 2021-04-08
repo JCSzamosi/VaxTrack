@@ -22,6 +22,8 @@ doses, or vaccine types.
 * [Saskatchewan](./SK/index.html)
 * [Yukon](./YT/index.html)
 
+</details>
+
 ## Setup
 
 <details><summary>Click here to see the setup code</summary>
