@@ -1,5 +1,5 @@
-Vax Track
-=========
+Vax Track Canada
+================
 
 Tracking how quickly Canada is moving its vaccine supply into human beings. All
 data are taken from [covid19tracker.ca](https://covid19tracker.ca). This 
@@ -24,8 +24,9 @@ upd = fromJSON(url)
 dat_can = upd$data
 # head(dat_can)
 # tail(dat_can)
-summary(dat_can)
+# summary(dat_can)
 dat_can$date = ymd(dat_can$date)
+source('functions.R')
 # summary(dat_can)
 
 dat_vax = (dat_can
@@ -35,91 +36,6 @@ dat_vax = (dat_can
 		   		   total_vaccines_distributed))
 # dim(dat_vax)
 # head(dat_vax)
-```
-
-Function definitions:
-
-```{r Functions}
-# This is the least graceful way I could have done this, but it works.
-avg_wait = function(dat_vax){
-	pos = 1
-	dist = 0
-	vaxxed = 0
-	i = 0
-	counted = 0
-	avg_df = data.frame(Time = NA, Doses = NA, .vaxxed = NA,
-						.counted = NA, .leftover = NA,
-						.dist = NA, .pos = NA)
-	for (i in 1:nrow(dat_vax)){
-		leftover = dist - vaxxed
-		dist = dat_vax[pos,'total_vaccines_distributed']
-		vaxxed = dat_vax[i,'total_vaccinations']
-		new_vaxxed = dat_vax[i,'change_vaccinations']
-		if (vaxxed <= dist){
-			timediff = dat_vax[i, 'date'] - dat_vax[pos, 'date']
-			avg_df = rbind(avg_df, data.frame(Time = timediff, 
-											  Doses = new_vaxxed,
-											  .vaxxed = vaxxed, 
-											  .counted = counted,
-											  .leftover = leftover,
-											  .dist = dist, .pos = pos))
-			counted = counted + new_vaxxed
-		} else {
-			timediff = dat_vax[i, 'date'] - dat_vax[pos, 'date']
-			avg_df = rbind(avg_df, data.frame(Time = timediff, Doses = leftover,
-											  .vaxxed = vaxxed, 
-											  .counted = counted,
-											  .leftover = leftover,
-											  .dist = dist, .pos = pos))
-			counted = counted + leftover
-			new_vaxxed = new_vaxxed - leftover
-			pos = pos + 1
-			dist = dat_vax[pos, 'total_vaccines_distributed']
-			while (dist < vaxxed){
-				avail = dist - counted
-				timediff = dat_vax[i, 'date'] - dat_vax[pos, 'date']
-				avg_df = rbind(avg_df, data.frame(Time = timediff,
-												  Doses = avail,
-											  .vaxxed = vaxxed, 
-											  .counted = counted,
-											  .leftover = leftover,
-											  .dist = dist, .pos = pos))
-				counted = counted + avail
-				new_vaxxed = new_vaxxed - avail
-				pos = pos + 1
-				dist = dat_vax[pos, 'total_vaccines_distributed']
-				if (pos > i){
-					stop('pos > i')
-				}
-			}
-			timediff = dat_vax[i, 'date'] - dat_vax[pos, 'date']
-			avg_df = rbind(avg_df, data.frame(Time = timediff, Doses = new_vaxxed,
-											  .vaxxed = vaxxed, 
-											  .counted = counted,
-											  .leftover = leftover,
-											  .dist = dist, .pos = pos))
-			counted = counted + new_vaxxed
-		}
-	}
-	avg_df = na.omit(avg_df)
-	return(avg_df)
-}
-
-roll_avg = function(x, n){
-	if (length(x) <= n){
-		stop('vector needs to be longer than window')
-	}
-	v_avg = rep(NA, n-1)
-	for (i in n:length(x)){
-		avg = mean(x[(i-n+1):i], na.rm = TRUE)
-		v_avg = c(v_avg, avg)
-	}
-	return(v_avg)
-}
-
-get_wait = function(df){
-	wait = sum(df$Time*df$Doses)/sum(df$Doses)
-}
 ```
 
 </details>
@@ -195,8 +111,8 @@ prop_adm_7
 
 <details><summary>code</summary>
 ```{r}
-wt_df = avg_wait(dat_vax)
-wait = get_wait(wt_df)
+wt_df = get_wait(dat_vax)
+wait = get_avg(wt_df)
 msg = paste('Vaccine doses have waited an average of', round(wait,1), 'days between being distributed and being administered.')
 ```
 </details>
@@ -211,7 +127,7 @@ wait_df = data.frame(Wait = NA)
 
 for(i in 2:nrow(dat_vax)){
 	wait_df = rbind(wait_df, 
-					data.frame(Wait = get_wait(avg_wait(dat_vax[1:i,]))))
+					data.frame(Wait = get_avg(wt_df, 1, i)))
 }
 wait_df = na.omit(wait_df)
 # head(wait_df)
@@ -230,11 +146,16 @@ wait_plt
 
 <details><summary>code</summary>
 ```{r}
+counted = sum(wt_df$Doses)
+for (i in 1:nrow(dat_vax)){
+	dist = dat_vax[i, 'total_vaccines_distributed']
+	if (counted < dist){
+		break
+	}
+}
 n = nrow(wt_df)
-dist = wt_df[n,'.dist']
-vaxxed = wt_df[n,'.vaxxed']
-leftover = dist - vaxxed
-pos = wt_df[n,'.pos']
+leftover = dist - counted
+pos = i
 timediff = today() - dat_vax[pos, 'date']
 
 avg_wt = data.frame(Time = timediff, Doses = leftover)
