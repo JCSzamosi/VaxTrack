@@ -195,7 +195,7 @@ msg
 
 <details><summary>code</summary>
 ```{r}
-msg = paste('This website was last updated', today())
+msg = paste('This website was last updated', now())
 msg1 = paste('The most recent data are from', max(dat_vax$date))
 ```
 </details>

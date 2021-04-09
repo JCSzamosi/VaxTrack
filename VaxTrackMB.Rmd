@@ -161,7 +161,7 @@ for (i in 1:nrow(dat_vax)){
 n = nrow(wt_df)
 leftover = dist - counted
 pos = i
-timediff = today() - dat_vax[pos, 'date']
+timediff = nowtoday() - dat_vax[pos, 'date']
 
 avg_wt = data.frame(Time = timediff, Doses = leftover)
 # avg_wt
@@ -195,7 +195,7 @@ msg
 
 <details><summary>code</summary>
 ```{r}
-msg = paste('This website was last updated', today())
+msg = paste('This website was last updated', now())
 msg1 = paste('The most recent data are from', max(dat_vax$date))
 ```
 </details>

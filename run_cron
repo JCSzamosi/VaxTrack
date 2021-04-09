@@ -15,6 +15,6 @@ Rscript -e "rmarkdown::render('VaxTrackPE.Rmd','html_document',output_file='PE.h
 Rscript -e "rmarkdown::render('VaxTrackQC.Rmd','html_document',output_file='QC.html')"
 Rscript -e "rmarkdown::render('VaxTrackSK.Rmd','html_document',output_file='SK.html')"
 Rscript -e "rmarkdown::render('VaxTrackYT.Rmd','html_document',output_file='YT.html')"
-# git add VaxTrack*.html
-# git ct -m "cron autoupdate $(date +%Y-%m-%d)"
-# git po
+git add VaxTrack*.html
+git ct -m "cron autoupdate $(date +%Y-%m-%d:%T)"
+git po
