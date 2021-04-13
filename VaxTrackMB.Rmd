@@ -106,13 +106,14 @@ prop_adm_7 = ggplot(dat_vax, aes(date, prop_7)) +
 ```{r, echo = FALSE, warning=FALSE, fig.width=8.65}
 abs_adm
 ```
+
 ```{r, echo = FALSE, warning=FALSE}
 prop_adm
 prop_adm_7
 ```
 
 
-## Wait Times
+## Dose Wait Times
 
 <details><summary>code</summary>
 ```{r}
@@ -161,7 +162,7 @@ for (i in 1:nrow(dat_vax)){
 n = nrow(wt_df)
 leftover = dist - counted
 pos = i
-timediff = nowtoday() - dat_vax[pos, 'date']
+timediff = today() - dat_vax[pos, 'date']
 
 avg_wt = data.frame(Time = timediff, Doses = leftover)
 # avg_wt
@@ -189,6 +190,83 @@ msg = paste('Current unadministered doses have been waiting an average of',
 
 ```{r, echo = FALSE}
 msg
+```
+
+
+## Administration Rates
+
+<details><summary>code</summary>
+```{r}
+dat_vax$rate_7 = roll_avg(dat_vax$change_vaccinations, 7)
+dat_vax$rate_all = roll_avg(dat_vax$change_vaccinations, 'all')
+rate_plt = ggplot(dat_vax, aes(date, change_vaccinations)) +
+	geom_line() +
+	ylab('New doses administered') +
+	ggtitle('Number of doses administered each day')
+
+rate_7_plt = ggplot(dat_vax, aes(date, rate_7)) +
+	geom_line() +
+	ylab('New doses administered') +
+	ggtitle('7-day average of new doses administered')
+
+rate_all_plt = ggplot(dat_vax, aes(date, rate_all)) +
+	geom_line() + 
+	ylab('New doses administered') +
+	ggtitle('Cumulative average daily doses administered')
+
+maxv = max(dat_vax$change_vaccinations, na.rm = TRUE)
+avg7 = dat_vax[nrow(dat_vax),'rate_7']
+cum7 = dat_vax[nrow(dat_vax), 'rate_all']
+msg = paste('The maximum doses administered on a single day was',
+			format(maxv, nsmall = 0, big.mark = ','))
+msg1 = paste('The average number of doses administered per day',
+			 'in the last 7 days was', 
+			 format(round(avg7), nsmall = 0, big.mark = ','))
+msg2 = paste('The cumulative average number of doses administered per day has',
+			 'been', format(round(cum7), nsmall = 0, big.mark = ','))
+```
+
+</details>
+
+```{r, echo = FALSE}
+msg
+msg1
+msg2
+```
+
+### What if we didn't wait?
+
+In a counterfactual where we administer doses as soon as they come in, expanding 
+capacity as necessary to ensure no doses wait more than 2 days:
+
+<details><summary>code</summary>
+```{r}
+vax_adm = what_if(dat_vax)
+
+maxv = max(vax_adm$Doses, na.rm = TRUE)
+vax_adm$rate_7 = roll_avg(vax_adm$Doses, 7)
+vax_adm$rate_all = roll_avg(vax_adm$Doses, 'all')
+tot = sum(vax_adm$Doses)
+avg7 = vax_adm[nrow(vax_adm),'rate_7']
+cum7 = vax_adm[nrow(vax_adm), 'rate_all']
+msg0 = paste(format(tot, nsmall = 0, big.mark = ','), 'people would have been',
+			 'vaccinated so far.')
+msg = paste('The maximum doses administered on a single day would have been',
+			format(maxv, nsmall = 0, big.mark = ','))
+msg1 = paste('The average number of doses administered per day',
+			 'in the last 7 days would have been', 
+			 format(round(avg7), nsmall = 0, big.mark = ','))
+msg2 = paste('The cumulative average number of doses administered per day',
+			 'would have been', format(round(cum7), nsmall = 0, big.mark = ','))
+```
+
+</details>
+
+```{r, echo = FALSE}
+msg0
+msg
+msg1
+msg2
 ```
 
 ---
